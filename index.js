@@ -28,7 +28,7 @@ function fetchAdapter (ctx) {
   var url = compilePath(ctx.options.url, ctx.options.params || {})
   if (ctx.options.body) options.body = ctx.options.body
   if (ctx.options.headers) options.headers = evaluateHeaders(ctx.options.headers)
-  if (ctx.options.query) url += buildQueryString(query)
+  if (ctx.options.query) url += buildQueryString(ctx.options.query)
 
   return fetch(url, options)
     .then(function resolveFetch (res) {
