@@ -32,7 +32,11 @@ function fetchAdapter (ctx) {
 
   return fetch(url, options)
     .then(function resolveFetch (res) {
-      return res[ctx.options.parser || 'json']()
+      if (res.ok) {
+        res[ctx.options.parser || 'json']()
+      } else {
+        throw res
+      }
     })
     .then(function resolveAdapter (data) {
       ctx.done(data)
