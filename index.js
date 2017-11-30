@@ -33,7 +33,7 @@ function fetchAdapter (ctx) {
   return fetch(url, options)
     .then(function resolveFetch (res) {
       if (res.ok) {
-        res[ctx.options.parser || 'json']()
+        return res[ctx.options.parser || 'json']()
       } else {
         throw res
       }
