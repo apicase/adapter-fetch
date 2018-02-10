@@ -15,7 +15,7 @@ function buildQueryString(query) {
 
 module.exports = {
   callback(ctx) {
-    return fetch(url, options)
+    return fetch(ctx.payload.url, ctx.payload.options)
       .then(ctx.resolve)
       .catch(ctx.reject)
   },
