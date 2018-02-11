@@ -10,6 +10,7 @@
     "lint": "eslint --fix index.js"
   },
   "dependencies": {
+    "node-fetch": "^2.0.0",
     "path-to-regexp": "^2.1.0"
   },
   "devDependencies": {
