@@ -21,7 +21,7 @@ module.exports = {
           .then(function(data) {
             ctx.resolve({
               success: ctx.payload.validateStatus(res.status),
-              data: response.body,
+              data: data,
               error: null,
               status: res.status,
               statusText: res.statusText
@@ -30,7 +30,7 @@ module.exports = {
           .catch(function(error) {
             ctx.reject({
               success: false,
-              data: response.body,
+              data: res.body,
               error: error,
               status: res.status,
               statusText: res.statusText
