@@ -16,12 +16,44 @@ function buildQueryString(query) {
 module.exports = {
   callback(ctx) {
     return fetch(ctx.payload.url, ctx.payload.options)
-      .then(ctx.resolve)
-      .catch(ctx.reject)
+      .then(function(res) {
+        return res[ctx.payload.parser]().then(function (data) {
+          ctx.resolve({
+            success: ctx.payload.validateStatus(res.status),
+            data: response.body,
+            error: null,
+            status: res.status,
+            statusText: res.statusText
+          })
+        }).catch(function (error) {
+          ctx.reject({
+            success: false,
+            data: response.body,
+            error: error,
+            status: res.status,
+            statusText: res.statusText
+          })
+        })
+      })
+      .catch(function (error) {
+        ctx.reject({
+          success: false,
+          data: null,
+          error: error,
+          status: null,
+          statusText: null
+        })
+      )
   },
   convert(payload) {
     var res = {
       url: compilePath(payload.url, payload.params || {}),
+      parser: payload.parser || 'json',
+      validateStatus:
+        payload.validateStatus ||
+        function(status) {
+          return status >= 200 && status < 300
+        },
       options: {
         method: payload.method || 'GET',
         headers: payload.headers || {},
