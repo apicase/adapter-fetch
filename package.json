@@ -1,9 +1,9 @@
 {
   "name": "apicase-adapter-fetch",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Fetch adapter for Apicase",
   "main": "index.js",
-  "repository": "https://github.com/Apicase/apicase-adapter-fetch",
+  "repository": "https://github.com/apicase/adapter-fetch",
   "author": "Anton Kosykh",
   "license": "MIT",
   "scripts": {
