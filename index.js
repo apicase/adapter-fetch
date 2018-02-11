@@ -17,25 +17,27 @@ module.exports = {
   callback(ctx) {
     return fetch(ctx.payload.url, ctx.payload.options)
       .then(function(res) {
-        return res[ctx.payload.parser]().then(function (data) {
-          ctx.resolve({
-            success: ctx.payload.validateStatus(res.status),
-            data: response.body,
-            error: null,
-            status: res.status,
-            statusText: res.statusText
+        return res[ctx.payload.parser]()
+          .then(function(data) {
+            ctx.resolve({
+              success: ctx.payload.validateStatus(res.status),
+              data: response.body,
+              error: null,
+              status: res.status,
+              statusText: res.statusText
+            })
           })
-        }).catch(function (error) {
-          ctx.reject({
-            success: false,
-            data: response.body,
-            error: error,
-            status: res.status,
-            statusText: res.statusText
+          .catch(function(error) {
+            ctx.reject({
+              success: false,
+              data: response.body,
+              error: error,
+              status: res.status,
+              statusText: res.statusText
+            })
           })
-        })
       })
-      .catch(function (error) {
+      .catch(function(error) {
         ctx.reject({
           success: false,
           data: null,
@@ -43,7 +45,7 @@ module.exports = {
           status: null,
           statusText: null
         })
-      )
+      })
   },
   convert(payload) {
     var res = {
