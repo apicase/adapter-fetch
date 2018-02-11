@@ -70,8 +70,8 @@ module.exports = {
     }
     return res
   },
-  merge(to, from) {
-    var res = Object.assign(from, to)
+  merge(from, to) {
+    var res = Object.assign({}, from, to)
     if (to.url && from.url) {
       res.url = to.url[0] === '/' ? to.url : [from.url, to.url].join('/')
     }
