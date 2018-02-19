@@ -1,61 +1,58 @@
-var pathToRegexp = require('path-to-regexp')
+const pathToRegexp = require('path-to-regexp')
 
-function compilePath(url, params) {
-  return pathToRegexp.compile(url)(params)
-}
+const compilePath = (url, params) => pathToRegexp.compile(url)(params)
 
-function buildQueryString(query) {
-  var queryString = ''
-  Object.keys(query).forEach(function encodeQueryPart(key) {
-    queryString +=
-      encodeURIComponent(key) + '=' + encodeURIComponent(query[key])
-  })
+const encodeURIParts = (res, [key, val]) =>
+  res + encodeURIComponent(key) + '=' + encodeURIComponent(val)
+
+const buildQueryString = query => {
+  const queryString = Object.entries(query).reduce(encodeURIParts, '')
   return queryString.length ? '?' + queryString : ''
 }
 
+const defaultStatusValidator = status => status >= 200 && status < 300
+
 module.exports = {
-  callback(ctx) {
-    return fetch(ctx.payload.url, ctx.payload.options)
-      .then(function(res) {
-        return res[ctx.payload.parser]()
-          .then(function(data) {
-            ctx.resolve({
-              success: ctx.payload.validateStatus(res.status),
-              data: data,
-              error: null,
-              status: res.status,
-              statusText: res.statusText
-            })
-          })
-          .catch(function(error) {
-            ctx.reject({
-              success: false,
-              data: res.body,
-              error: error,
-              status: res.status,
-              statusText: res.statusText
-            })
-          })
-      })
-      .catch(function(error) {
-        ctx.reject({
-          success: false,
-          data: null,
-          error: error,
-          status: null,
-          statusText: null
+  createState: () => ({
+    status: null,
+    headers: null,
+    body: null
+  }),
+
+  callback({ payload, resolve, reject }) {
+    const done = res => {
+      const isValid = payload.validateStatus(res.status)
+      if (!isValid) {
+        return reject({
+          status: res.status,
+          headers: res.headers,
+          body: res.body
         })
-      })
+      } else {
+        return res[payload.parser()].then(body =>
+          resolve({
+            status: res.status,
+            headers: res.headers,
+            body: body
+          })
+        )
+      }
+    }
+
+    const fail = err => {
+      throw err
+    }
+
+    return fetch(payload.url, payload.options)
+      .then(done)
+      .catch(fail)
   },
+
   convert(payload) {
-    var res = {
+    const res = {
       url: compilePath(payload.url, payload.params || {}),
       parser: payload.parser || 'json',
-      validateStatus:
-        payload.validateStatus ||
-        function(status) {
-          return status >= 200 && status < 300
-        },
+      validateStatus: payload.validateStatus || defaultStatusValidator,
       options: {
         method: payload.method || 'GET',
         headers: payload.headers || {},
@@ -63,15 +60,16 @@ module.exports = {
       }
     }
     if (payload.query) {
-      res.url += buildQueryString(payload.query)
+      res.url = buildQueryString(payload.query)
     }
     if (payload.body) {
       res.options.body = payload.body
     }
     return res
   },
+
   merge(from, to) {
-    var res = Object.assign({}, from, to)
+    const res = { ...from, ...to }
     if (to.url && from.url) {
       res.url = to.url[0] === '/' ? to.url : [from.url, to.url].join('/')
     }

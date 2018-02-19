@@ -1,6 +1,6 @@
 {
-  "name": "apicase-adapter-fetch",
-  "version": "0.2.7",
+  "name": "@apicase/adapter-fetch",
+  "version": "0.3.0",
   "description": "Fetch adapter for Apicase",
   "main": "index.js",
   "repository": "https://github.com/apicase/adapter-fetch",
@@ -10,7 +10,6 @@
     "lint": "eslint --fix index.js"
   },
   "dependencies": {
-    "node-fetch": "^2.0.0",
     "path-to-regexp": "^2.1.0"
   },
   "devDependencies": {
