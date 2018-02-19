@@ -12,7 +12,7 @@ const buildQueryString = query => {
 
 const defaultStatusValidator = status => status >= 200 && status < 300
 
-module.exports = {
+export default {
   createState: () => ({
     status: null,
     headers: null,
