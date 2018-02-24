@@ -69,7 +69,7 @@ export default {
   },
 
   merge(from, to) {
-    const res = { ...from, ...to }
+    const res = Object.assign({}, from, to)
     if (to.url && from.url) {
       res.url = to.url[0] === '/' ? to.url : [from.url, to.url].join('/')
     }
