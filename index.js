@@ -29,7 +29,7 @@ export default {
           body: res.body
         })
       } else {
-        return res[payload.parser()].then(body =>
+        return res[payload.parser]().then(body =>
           resolve({
             status: res.status,
             headers: res.headers,
