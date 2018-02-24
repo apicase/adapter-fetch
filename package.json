@@ -1,6 +1,6 @@
 {
   "name": "@apicase/adapter-fetch",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Fetch adapter for Apicase",
   "main": "index.js",
   "repository": "https://github.com/apicase/adapter-fetch",
