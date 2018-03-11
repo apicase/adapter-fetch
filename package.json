@@ -13,6 +13,7 @@
     "prepublish": "npm run lint && npm run build"
   },
   "dependencies": {
+    "cross-fetch": "^2.1.0",
     "path-to-regexp": "^2.1.0"
   },
   "devDependencies": {

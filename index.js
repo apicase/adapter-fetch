@@ -1,3 +1,4 @@
+const fetch = require('cross-fetch')
 const pathToRegexp = require('path-to-regexp')
 
 const compilePath = (url, params) => pathToRegexp.compile(url)(params)
