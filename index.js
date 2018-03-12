@@ -75,7 +75,7 @@ export default {
       }
     }
     if (payload.query) {
-      res.url = buildQueryString(payload.query)
+      res.url += buildQueryString(payload.query)
     }
     if (payload.body) {
       res.options.body = payload.body
