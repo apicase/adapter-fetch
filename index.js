@@ -1,6 +1,19 @@
 const fetch = require('cross-fetch')
 const pathToRegexp = require('path-to-regexp')
 
+const parseUrl = url => {
+  let origin = ''
+  let pathname = ''
+  if (url.indexOf('://') > -1) {
+    const res = url.match('(^(?:(?:.*?)?//)?[^/?#;]*)(.*)')
+    origin = res[1]
+    pathname = res[2]
+  } else {
+    pathname = url
+  }
+  return { origin, pathname }
+}
+
 const compilePath = (url, params) => pathToRegexp.compile(url)(params)
 
 const encodeURIParts = (res, [key, val]) =>
@@ -50,8 +63,9 @@ export default {
   },
 
   convert(payload) {
+    const { origin, pathname } = parseUrl(payload.url)
     const res = {
-      url: compilePath(payload.url, payload.params || {}),
+      url: origin + compilePath(pathname, payload.params || {}),
       parser: payload.parser || 'json',
       validateStatus: payload.validateStatus || defaultStatusValidator,
       options: {
