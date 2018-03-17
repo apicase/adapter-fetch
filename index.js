@@ -33,7 +33,10 @@ export default {
     body: null
   }),
 
-  callback({ payload, resolve, reject }) {
+  callback({ payload, resolve, reject, setCancelCallback }) {
+    if (payload.controller) {
+      setCancelCallback(payload.controller.abort)
+    }
     const done = res => {
       const isValid = payload.validateStatus(res.status)
       if (!isValid) {
@@ -59,14 +62,24 @@ export default {
 
     return fetch(payload.url, payload.options)
       .then(done)
-      .catch(fail)
+      .catch(function(err) {
+        if (err.name === 'AbortError') return
+        fail(err)
+      })
   },
 
   convert(payload) {
+    let controller
+    try {
+      /* eslint-disable no-undef */
+      controller = new AbortController()
+      /* eslint-enable no-undef */
+    } catch (err) {}
     const { origin, pathname } = parseUrl(payload.url)
     const res = {
       url: origin + compilePath(pathname, payload.params || {}),
       parser: payload.parser || 'json',
+      controller: controller,
       validateStatus: payload.validateStatus || defaultStatusValidator,
       options: {
         method: payload.method || 'GET',
@@ -79,6 +92,9 @@ export default {
     }
     if (payload.body) {
       res.options.body = payload.body
+    }
+    if (controller) {
+      res.options.signal = controller.signal
     }
     return res
   },
