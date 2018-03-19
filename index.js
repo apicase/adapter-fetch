@@ -1,4 +1,4 @@
-const fetch = require('cross-fetch')
+const fetch = (typeof window === 'object' && window.fetch) || require('node-fetch')
 const pathToRegexp = require('path-to-regexp')
 
 const parseUrl = url => {
@@ -16,8 +16,7 @@ const parseUrl = url => {
 
 const compilePath = (url, params) => pathToRegexp.compile(url)(params)
 
-const encodeURIParts = (res, [key, val]) =>
-  res + encodeURIComponent(key) + '=' + encodeURIComponent(val)
+const encodeURIParts = (res, [key, val]) => res + encodeURIComponent(key) + '=' + encodeURIComponent(val)
 
 const buildQueryString = query => {
   const queryString = Object.entries(query).reduce(encodeURIParts, '')
