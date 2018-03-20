@@ -1,4 +1,5 @@
-const fetch = (typeof window === 'object' && window.fetch) || require('node-fetch')
+const fetch =
+  (typeof window === 'object' && window.fetch) || require('node-fetch')
 const pathToRegexp = require('path-to-regexp')
 
 const parseUrl = url => {
@@ -16,7 +17,8 @@ const parseUrl = url => {
 
 const compilePath = (url, params) => pathToRegexp.compile(url)(params)
 
-const encodeURIParts = (res, [key, val]) => res + encodeURIComponent(key) + '=' + encodeURIComponent(val)
+const encodeURIParts = (res, [key, val]) =>
+  res + encodeURIComponent(key) + '=' + encodeURIComponent(val)
 
 const buildQueryString = query => {
   const queryString = Object.entries(query).reduce(encodeURIParts, '')
@@ -24,6 +26,11 @@ const buildQueryString = query => {
 }
 
 const defaultStatusValidator = status => status >= 200 && status < 300
+
+const prepareBody = body =>
+  body instanceof FormData
+    ? body
+    : typeof body === 'object' ? JSON.stringify(body) : body
 
 export default {
   createState: () => ({
@@ -90,7 +97,7 @@ export default {
       res.url += buildQueryString(payload.query)
     }
     if (payload.body) {
-      res.options.body = payload.body
+      res.options.body = (payload.prepareBody || prepareBody)(payload.body)
     }
     if (controller) {
       res.options.signal = controller.signal
