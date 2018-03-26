@@ -107,7 +107,7 @@ export default {
 
   merge(from, to) {
     const res = Object.assign({}, from, to)
-    if (to.url && from.url) {
+    if (to.url !== undefined && from.url !== undefined) {
       res.url = to.url[0] === '/' ? to.url : [from.url, to.url].join('/')
     }
     return res
