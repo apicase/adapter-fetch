@@ -1,12 +1,12 @@
 const fetch =
-  (typeof window === 'object' && window.fetch) || require('node-fetch')
-const pathToRegexp = require('path-to-regexp')
+  (typeof window === "object" && window.fetch) || require("node-fetch")
+const pathToRegexp = require("path-to-regexp")
 
 const parseUrl = url => {
-  let origin = ''
-  let pathname = ''
-  if (url.indexOf('://') > -1) {
-    const res = url.match('(^(?:(?:.*?)?//)?[^/?#;]*)(.*)')
+  let origin = ""
+  let pathname = ""
+  if (url.indexOf("://") > -1) {
+    const res = url.match("(^(?:(?:.*?)?//)?[^/?#;]*)(.*)")
     origin = res[1]
     pathname = res[2]
   } else {
@@ -18,11 +18,11 @@ const parseUrl = url => {
 const compilePath = (url, params) => pathToRegexp.compile(url)(params)
 
 const encodeURIParts = (res, [key, val]) =>
-  res + encodeURIComponent(key) + '=' + encodeURIComponent(val)
+  res + encodeURIComponent(key) + "=" + encodeURIComponent(val)
 
 const buildQueryString = query => {
-  const queryString = Object.entries(query).reduce(encodeURIParts, '')
-  return queryString.length ? '?' + queryString : ''
+  const queryString = Object.entries(query).reduce(encodeURIParts, "")
+  return queryString.length ? "?" + queryString : ""
 }
 
 const defaultStatusValidator = status => status >= 200 && status < 300
@@ -30,7 +30,7 @@ const defaultStatusValidator = status => status >= 200 && status < 300
 const prepareBody = body =>
   body instanceof FormData
     ? body
-    : typeof body === 'object' ? JSON.stringify(body) : body
+    : typeof body === "object" ? JSON.stringify(body) : body
 
 export default {
   createState: () => ({
@@ -69,7 +69,7 @@ export default {
     return fetch(payload.url, payload.options)
       .then(done)
       .catch(function(err) {
-        if (err.name === 'AbortError') return
+        if (err.name === "AbortError") return
         fail(err)
       })
   },
@@ -84,13 +84,13 @@ export default {
     const { origin, pathname } = parseUrl(payload.url)
     const res = {
       url: origin + compilePath(pathname, payload.params || {}),
-      parser: payload.parser || 'json',
+      parser: payload.parser || "json",
       controller: controller,
       validateStatus: payload.validateStatus || defaultStatusValidator,
       options: {
-        method: payload.method || 'GET',
+        method: payload.method || "GET",
         headers: payload.headers || {},
-        credentials: payload.createntials || 'omit'
+        credentials: payload.createntials || "omit"
       }
     }
     if (payload.query) {
@@ -98,6 +98,12 @@ export default {
     }
     if (payload.body) {
       res.options.body = (payload.prepareBody || prepareBody)(payload.body)
+    }
+    if (
+      typeof payload.body === "object" &&
+      !(payload.body instanceof FormData)
+    ) {
+      res.options.headers["Content-Type"] = "application/json"
     }
     if (controller) {
       res.options.signal = controller.signal
@@ -108,7 +114,7 @@ export default {
   merge(from, to) {
     const res = Object.assign({}, from, to)
     if (to.url !== undefined && from.url !== undefined) {
-      res.url = to.url[0] === '/' ? to.url : [from.url, to.url].join('/')
+      res.url = to.url[0] === "/" ? to.url : [from.url, to.url].join("/")
     }
     return res
   }
