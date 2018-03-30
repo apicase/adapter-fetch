@@ -32,6 +32,12 @@ const prepareBody = body =>
     ? body
     : typeof body === 'object' ? JSON.stringify(body) : body
 
+const createResponse = res => body => ({
+  status: res.status,
+  headers: res.headers,
+  body: body
+})
+
 export default {
   createState: () => ({
     status: null,
@@ -43,23 +49,21 @@ export default {
     if (payload.controller) {
       setCancelCallback(payload.controller.abort)
     }
+
+    const cbs = { resolve, reject }
+
     const done = res => {
       const isValid = payload.validateStatus(res.status)
-      if (!isValid) {
-        return reject({
-          status: res.status,
-          headers: res.headers,
-          body: res.body
-        })
-      } else {
-        return res[payload.parser]().then(body =>
-          resolve({
-            status: res.status,
-            headers: res.headers,
-            body: body
-          })
-        )
-      }
+      const responseWith = createResponse(res)
+
+      const stream = res.clone()
+
+      const parser = payload.parser[isValid ? 'done' : 'fail']
+      const callback = isValid ? 'resolve' : 'reject'
+
+      return stream[parser]()
+        .then(body => cbs[callback](responseWith(body)))
+        .catch(() => res.text().then(body => cbs[callback](responseWith(body))))
     }
 
     const fail = err => {
@@ -84,7 +88,10 @@ export default {
     const { origin, pathname } = parseUrl(payload.url)
     const res = {
       url: origin + compilePath(pathname, payload.params || {}),
-      parser: payload.parser || 'json',
+      parser: (payload.parser &&
+        (typeof payload.parser === 'string'
+          ? { done: payload.parser, fail: payload.parser }
+          : payload.parser)) || { done: 'json', fail: 'json' },
       controller: controller,
       validateStatus: payload.validateStatus || defaultStatusValidator,
       options: {
