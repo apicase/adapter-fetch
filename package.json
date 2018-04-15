@@ -7,6 +7,11 @@
   "repository": "https://github.com/apicase/adapter-fetch",
   "author": "Anton Kosykh",
   "license": "MIT",
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run lint"
+    }
+  },
   "scripts": {
     "lint": "eslint --fix index.js",
     "build": "rollup index.js --o index.cjs.js -f cjs",
@@ -24,6 +29,7 @@
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
+    "ghooks": "^2.0.2",
     "rollup": "^0.56.5"
   }
 }
