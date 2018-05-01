@@ -45,7 +45,9 @@ const defaultStatusValidator = status => status >= 200 && status < 300
 const prepareBody = body =>
   body instanceof FormData
     ? body
-    : typeof body === 'object' ? JSON.stringify(body) : body
+    : typeof body === 'object'
+      ? JSON.stringify(body)
+      : body
 
 const createResponse = res => body => ({
   status: res.status,
@@ -60,7 +62,7 @@ export default {
     body: null
   }),
 
-  callback({ payload, resolve, reject, setCancelCallback }) {
+  callback({ emit, payload, resolve, reject, setCancelCallback }) {
     if (payload.controller) {
       setCancelCallback(payload.controller.abort)
     }
@@ -71,14 +73,26 @@ export default {
       const isValid = payload.validateStatus(res.status)
       const responseWith = createResponse(res)
 
-      const stream = res.clone()
-
       const parser = payload.parser[isValid ? 'done' : 'fail']
       const callback = isValid ? 'resolve' : 'reject'
 
-      return stream[parser]()
-        .then(body => cbs[callback](responseWith(body)))
-        .catch(() => res.text().then(body => cbs[callback](responseWith(body))))
+      if (parser === 'json') {
+        return res.text().then(body => {
+          try {
+            cbs[callback](responseWith(JSON.parse(body)))
+          } catch (err) {
+            emit('error', err)
+            cbs[callback](responseWith(body))
+          }
+        })
+      } else {
+        return res[parser]()
+          .then(body => cbs[callback](responseWith(body)))
+          .catch(err => {
+            emit('error', err)
+            cbs[callback](responseWith(err))
+          })
+      }
     }
 
     const fail = err => {
@@ -110,8 +124,12 @@ export default {
       controller: controller,
       validateStatus: payload.validateStatus || defaultStatusValidator,
       options: {
+        mode: payload.mode || 'same-origin',
+        cache: payload.cache || 'default',
         method: payload.method || 'GET',
         headers: payload.headers || {},
+        redirect: payload.redirect || 'follow',
+        referrer: payload.referrer || 'client',
         credentials: payload.createntials || 'omit'
       }
     }
