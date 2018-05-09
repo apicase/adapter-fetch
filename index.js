@@ -2,6 +2,8 @@ const fetch =
   (typeof window === 'object' && window.fetch) || require('node-fetch')
 const pathToRegexp = require('path-to-regexp')
 
+var _FormData = typeof FormData !== 'undefined' ? FormData : function() {}
+
 const parseUrl = url => {
   let origin = ''
   let pathname = ''
@@ -43,7 +45,7 @@ const buildQueryString = payload =>
 const defaultStatusValidator = status => status >= 200 && status < 300
 
 const prepareBody = body =>
-  body instanceof FormData
+  body instanceof _FormData
     ? body
     : typeof body === 'object'
       ? JSON.stringify(body)
