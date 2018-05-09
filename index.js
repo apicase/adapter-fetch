@@ -143,7 +143,7 @@ export default {
     }
     if (
       typeof payload.body === 'object' &&
-      !(payload.body instanceof FormData)
+      !(payload.body instanceof _FormData)
     ) {
       res.options.headers['Content-Type'] = 'application/json'
     }
