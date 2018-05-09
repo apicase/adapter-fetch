@@ -1,6 +1,6 @@
 {
   "name": "@apicase/adapter-fetch",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Fetch adapter for Apicase",
   "main": "index.cjs.js",
   "module": "index.js",
