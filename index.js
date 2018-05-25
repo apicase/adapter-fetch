@@ -132,7 +132,7 @@ export default {
         headers: payload.headers || {},
         redirect: payload.redirect || 'follow',
         referrer: payload.referrer || 'client',
-        credentials: payload.createntials || 'omit'
+        credentials: payload.credentials || 'omit'
       }
     }
     if (payload.query) {
