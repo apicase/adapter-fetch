@@ -81,7 +81,8 @@ export default {
       if (parser === 'json') {
         return res.text().then(body => {
           try {
-            cbs[callback](responseWith(JSON.parse(body)))
+            const parsedBody = body ? JSON.parse(body) : body
+            cbs[callback](responseWith(parsedBody))
           } catch (err) {
             emit('error', err)
             cbs[callback](responseWith(body))
