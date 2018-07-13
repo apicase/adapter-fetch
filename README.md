@@ -1,4 +1,4 @@
-# apicase-adapter-fetch
+# @apicase/adapter-fetch
 
 Fetch adapter for apicase-core
 
