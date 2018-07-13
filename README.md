@@ -1,6 +1,6 @@
 # @apicase/adapter-fetch
 
-Fetch adapter for apicase-core
+Fetch adapter for [@apicase/core](https://github.com/apicase/core)
 
 ## Installation
 
