@@ -7,23 +7,14 @@ Fetch adapter for apicase-core
 1. Install via NPM
 
 ```
-npm install apicase-adapter-fetch
+npm install @apicase/adapter-fetch
 ```
 
 2. Import it
 
 ```javascript
-import { apicase } from 'apicase-core'
-import fetch from 'apicase-adapter-fetch'
-
-const fetchAPI = apicase(fetch)
-```
-
-3. If you use Node.js, use this instead of previous
-
-```javascript
-const apicase = require('apicase-core').default
-const fetch = require('apicase-adapter-fetch/node')
+import { apicase } from '@apicase/core'
+import fetch from '@apicase/adapter-fetch'
 
 const fetchAPI = apicase(fetch)
 ```
@@ -33,35 +24,17 @@ We use [**node-fetch**](https://www.npmjs.com/package/node-fetch) as polyfill fo
 ## Basic usage
 
 ```javascript
-fetchAPI({
+const req = await fetchAPI({
   url: '/api/posts',
   headers: { token: 'my_secret_token' },
   query: { userId: 1 }
 })
-  .then(console.log)
-  .catch(console.error)
-```
 
-## Response format
+// Whether request was succeed or failed
+console.log(req.success)
 
-```javascript
-{
-  // true if everything is ok
-  // false if got bad status or another errors happened
-  "success": Boolean,
-  // Response.body
-  // null, if error
-  "data": any,
-  // Error
-  // null, if no errors
-  "error": any,
-  // Response.status
-  // null, if no-request error happened
-  "status": Number|null,
-  // Response.statusText
-  // null, if no-request error happened
-  "statustext": String|null
-}
+// Fetch result (with response body, headers etc)
+console.log(req.result)
 ```
 
 ## Features
