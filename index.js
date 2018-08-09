@@ -53,7 +53,10 @@ const prepareBody = body =>
 
 const createResponse = res => body => ({
   status: res.status,
-  headers: res.headers,
+  headers: res.headers.entries().reduce((res, pair) => {
+    res[pair[0]] = pair[1]
+    return res
+  }, {}),
   body: body
 })
 
